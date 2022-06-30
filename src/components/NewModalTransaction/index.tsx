@@ -4,18 +4,46 @@ import { X } from "phosphor-react"
 import { ArrowCircleDown, ArrowCircleUp } from 'phosphor-react'
 
 import { Container, RadioBox, TypeOfTransactionButtonGroup } from "./styles"
-import { useState } from "react"
+import { ChangeEvent, FormEvent, FormEventHandler, HTMLInputTypeAttribute, InputHTMLAttributes, ReactEventHandler, useState } from "react"
+import { api } from "../../services/api"
 
 interface NewModalTransactionProps {
     isNewTrasactionModalOpen: boolean
     handleCloseModal: () => void
 }
 
+interface IFormData {
+    value: number
+    name: string,
+    category: string
+}
+
+type TFormType = "deposit" | "withdraw"
+
 function NewModalTransaction({
     handleCloseModal,
     isNewTrasactionModalOpen,
 }: NewModalTransactionProps) {
-    const [transactionMethod, setTransactionMethod] = useState<"deposit" | "withdraw">('deposit')
+    const [transactionMethod, setTransactionMethod] = useState<TFormType>('deposit')
+    const [formData, setFormData] = useState<IFormData>({
+        name: '',
+        value: 0,
+        category: ''
+    })
+
+    const { name, value, category } = formData
+
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { value, id } = e.target
+        setFormData(prev => ({ ...prev, [id]: value }))
+    }
+
+    const handleFormSubmit = (e: FormEvent) => {
+        e.preventDefault()
+
+        const data = { ...formData, type: transactionMethod }
+        api.post('/transactions', data)
+    }
 
     return (
         <Modal
@@ -24,16 +52,22 @@ function NewModalTransaction({
             overlayClassName='react-modal-overlay'
             className='react-modal-content'
         >
-            <Container>
+            <Container onSubmit={handleFormSubmit}>
                 <h2>New transaction</h2>
 
                 <input
                     type="text"
                     placeholder="Name"
+                    id='name'
+                    value={name}
+                    onChange={handleInputChange}
                 />
                 <input
                     type="number"
                     placeholder="Value"
+                    id='value'
+                    value={value}
+                    onChange={handleInputChange}
                 />
                 <TypeOfTransactionButtonGroup>
                     <RadioBox
@@ -62,6 +96,9 @@ function NewModalTransaction({
                 <input
                     type="text"
                     placeholder="Category"
+                    id='category'
+                    value={category}
+                    onChange={handleInputChange}
                 />
                 <button type="submit">Register</button>
                 <button type="button" className="btn-inv">

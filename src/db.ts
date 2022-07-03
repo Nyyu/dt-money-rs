@@ -1,8 +1,15 @@
+// Filtering interface data
+export type DatabaseSimplified = Omit<DatabaseItems, "id" | "date">
+export type DatabaseSimplifiedv2 = Pick<
+    DatabaseItems,
+    "name" | "price" | "type" | "category"
+>
+
 export interface DatabaseItems {
     id: number | string
     name: string
     price: number
-    type: "income" | "outcome"
+    type: "income" | "outcome" | "deposit" | "withdraw"
     category: string
     date: Date
 }

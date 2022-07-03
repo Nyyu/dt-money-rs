@@ -4,6 +4,8 @@ import { index as Header } from './components/header'
 import { index as Dashboard } from './components/dashboard'
 import Transactions from './components/transactions'
 
+import TransactionProvider from "./Context/Transaction"
+
 import { GlobalStyle } from './styles/global'
 import Modal from 'react-modal'
 import NewModalTransaction from './components/NewModalTransaction'
@@ -18,7 +20,7 @@ function App() {
   const handleCloseModal = (): void => setIsNewTrasactionModalOpen(false)
 
   return (
-    <>
+    <TransactionProvider>
       <Header openModal={handleOpenModal} />
       <Dashboard />
       <Transactions />
@@ -26,7 +28,7 @@ function App() {
       <NewModalTransaction handleCloseModal={handleCloseModal} isNewTrasactionModalOpen={isNewTrasactionModalOpen} />
 
       <GlobalStyle />
-    </>
+    </TransactionProvider>
   )
 }
 

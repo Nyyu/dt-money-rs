@@ -9,16 +9,19 @@ A simple App that encompasses the idea of managing one's transactions through so
 -   DT Money - App
     -   Table
     -   Summary
+        -   Preview
 
 <br />
-
----
 
 ## Summary
 
 <br />
 
 ### Preview
+
+-   **Live**: [Link preview](https://dt-money-rs.vercel.app)
+
+        `Obs. live/production version can't quite use mirageJs cus vite blocks it, I guess`
 
 -   **Desktop**:
     <p>

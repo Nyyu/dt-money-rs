@@ -1,11 +1,14 @@
 import Modal from "react-modal"
+import { v4 as uuid } from 'uuid'
 
 import { X } from "phosphor-react"
 import { ArrowCircleDown, ArrowCircleUp } from 'phosphor-react'
 
 import { Container, RadioBox, TypeOfTransactionButtonGroup } from "./styles"
-import { ChangeEvent, FormEvent, FormEventHandler, HTMLInputTypeAttribute, InputHTMLAttributes, ReactEventHandler, useState } from "react"
+import { ChangeEvent, FormEvent, FormEventHandler, HTMLInputTypeAttribute, InputHTMLAttributes, ReactEventHandler, useContext, useState } from "react"
 import { api } from "../../services/api"
+import { TransactionContext } from "../../Context/Transaction"
+import { DatabaseItems } from "../../db"
 
 interface NewModalTransactionProps {
     isNewTrasactionModalOpen: boolean
@@ -13,7 +16,7 @@ interface NewModalTransactionProps {
 }
 
 interface IFormData {
-    value: number
+    price: number
     name: string,
     category: string
 }
@@ -24,14 +27,15 @@ function NewModalTransaction({
     handleCloseModal,
     isNewTrasactionModalOpen,
 }: NewModalTransactionProps) {
+    const { updateTransactions } = useContext(TransactionContext)
     const [transactionMethod, setTransactionMethod] = useState<TFormType>('deposit')
     const [formData, setFormData] = useState<IFormData>({
         name: '',
-        value: 0,
+        price: 0,
         category: ''
     })
 
-    const { name, value, category } = formData
+    const { name, price, category } = formData
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { value, id } = e.target
@@ -41,8 +45,12 @@ function NewModalTransaction({
     const handleFormSubmit = (e: FormEvent) => {
         e.preventDefault()
 
-        const data = { ...formData, type: transactionMethod }
-        api.post('/transactions', data)
+        // Update transactions
+        const data: DatabaseItems = { ...formData, type: (transactionMethod === 'withdraw') ? 'outcome' : 'income', date: new Date(), id: uuid() }
+        updateTransactions(data)
+
+        // Request modal close
+        handleCloseModal()
     }
 
     return (
@@ -65,8 +73,8 @@ function NewModalTransaction({
                 <input
                     type="number"
                     placeholder="Value"
-                    id='value'
-                    value={value}
+                    id='price'
+                    value={price}
                     onChange={handleInputChange}
                 />
                 <TypeOfTransactionButtonGroup>
